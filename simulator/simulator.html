@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoastMonitor Simulator</title>
+    <style>
+        .simulator-panel-link {
+            display: block;
+            margin-top: 4px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: rgba(41, 70, 61, 0.9);
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .simulator-help-link {
+            background: #48535d;
+        }
+
+        .simulation-speed-select {
+            position: relative;
+        }
+
+        .simulation-speed-select__trigger {
+            width: 100%;
+            border: 0;
+            background: #48535d;
+            cursor: pointer;
+        }
+
+        .simulation-speed-select__options {
+            position: absolute;
+            right: calc(100% + 6px);
+            top: 0;
+            display: none;
+            min-width: 88px;
+            padding: 8px;
+            border: 1px solid rgba(61, 69, 77, 0.18);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 10px 24px rgba(48, 60, 72, 0.18);
+            box-sizing: border-box;
+            z-index: 20;
+        }
+
+        .simulation-speed-select--open .simulation-speed-select__options {
+            display: grid;
+            gap: 6px;
+        }
+
+        .simulation-speed-select__option {
+            border: 2px solid #8b949d;
+            border-radius: 8px;
+            background: #f5f7fa;
+            color: #49545f;
+            padding: 7px 9px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .simulation-speed-select__option--selected {
+            border-color: #48535d;
+            background: #d9dde2;
+        }
+
+        .plot-settings__system-button {
+            display: none;
+        }
+
+        @media (max-width: 700px) and (orientation: portrait) {
+            #simulation-speed-control,
+            .simulator-panel-link {
+                flex: 1 1 48%;
+                margin-bottom: 6px;
+            }
+        }
+    </style>
+  <script type="module" crossorigin src="./assets/simulator-BG21GzGR.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/simulator-B_olI3gC.css">
+</head>
+
+<body>
+    <div class="main-area">
+        <div class="plot-wrapper">
+            <canvas id="plot_temperature"></canvas>
+        </div>
+        <div class="side-panel">
+            <div id="temp-panel">
+                <button class="button temp-button" id="temperature-display-bt">BT: ----.-℃</button>
+                <button class="button temp-button" id="temperature-display-delta-bt">ΔBT: ----.-℃</button>
+            </div>
+            <div id="controller">
+                <div id="reference-profile-control"></div>
+                <button class="button control-button" value="start">Start</button>
+                <button class="button control-button" value="stop">Stop</button>
+                <button class="button control-button" value="reset">Reset</button>
+                <button class="button control-button" value="export">Export</button>
+                <div id="simulation-speed-control"></div>
+                <a class="simulator-panel-link simulator-help-link" href="../help.html">Help</a>
+                <a class="simulator-panel-link" href="../index.html">RoastMonitorへ戻る</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
