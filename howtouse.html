@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="片手鍋を使った焙煎のやり方と、RoastMonitorの使い方を紹介します。" />
+  <title>RoastMonitor Usage</title>
+  <style>
+    :root {
+      --ink: #24302b;
+      --deep-green: #29463d;
+      --forest: #35584c;
+      --cream: #f7f4ed;
+      --paper: #fdfbf6;
+      --terracotta: #bb704f;
+      --muted: #69736e;
+      --line: rgba(41, 70, 61, 0.16);
+      --shadow: 0 18px 48px rgba(47, 45, 37, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--cream);
+      font-family: "Noto Sans JP", "Yu Gothic", sans-serif;
+      font-size: 15px;
+      line-height: 1.85;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .inner {
+      width: min(1040px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 27px 0;
+      background: var(--deep-green);
+      color: #fff;
+    }
+
+    .header-inner,
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .logo {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+    }
+
+    .header-link {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    main {
+      padding: 76px 0 92px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--terracotta);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 18px;
+      font-size: clamp(31px, 5vw, 48px);
+      letter-spacing: 0.05em;
+      line-height: 1.45;
+    }
+
+    h2 {
+      margin: 0 0 20px;
+      font-size: 25px;
+      letter-spacing: 0.04em;
+    }
+
+    h3 {
+      margin-bottom: 8px;
+      color: var(--deep-green);
+      font-size: 17px;
+      letter-spacing: 0.03em;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin-bottom: 31px;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      border-radius: 999px;
+      background: var(--deep-green);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .button-secondary {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--deep-green);
+    }
+
+    .button:disabled,
+    .button.is-disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .roast-start-hint {
+      margin: 12px 0 32px;
+      font-size: 0.92rem;
+      color: var(--terracotta);
+    }
+
+    .screen {
+      margin: 54px 0 64px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .screen img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .screen figcaption {
+      padding: 13px 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .actions+section {
+      margin-top: 64px;
+    }
+
+    section+section {
+      margin-top: 64px;
+    }
+
+    .cards {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .card {
+      padding: 22px 23px 20px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+    }
+
+    .card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .label {
+      display: inline-block;
+      margin-bottom: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: rgba(187, 112, 79, 0.12);
+      color: var(--terracotta);
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .note {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-left: 3px solid var(--terracotta);
+      background: rgba(187, 112, 79, 0.08);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .steps {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+      display: grid;
+      gap: 14px;
+    }
+
+    .steps>li {
+      position: relative;
+      padding: 20px 23px 20px 64px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+      counter-increment: step;
+    }
+
+    .steps>li::before {
+      content: counter(step);
+      position: absolute;
+      top: 19px;
+      left: 22px;
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--deep-green);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .steps li p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .substeps {
+      margin: 0;
+      padding-left: 1.5em;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .substeps li {
+      margin-bottom: 6px;
+    }
+
+    .substeps li:last-child {
+      margin-bottom: 0;
+    }
+
+    footer {
+      padding: 27px 0;
+      background: #243a33;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    footer p {
+      margin: 0;
+      font-size: 12px;
+    }
+
+    @media (max-width: 700px) {
+      main {
+        padding: 56px 0 70px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .screen {
+        margin: 42px 0 52px;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="inner header-inner">
+      <a class="logo" href="./index.html">RoastMonitor</a>
+      <a class="header-link" href="./index.html">トップページへ戻る</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="inner">
+      <p class="eyebrow">Help</p>
+      <h1>使い方ガイド</h1>
+      <p class="lead">
+        片手鍋を使った手軽な焙煎の流れと、RoastMonitorで温度を記録しながら焙煎する方法を紹介します。
+        ここでは中浅煎り（ミディアムロースト）と、中深煎り（シティーロースト）についてそれぞれ説明します。
+        初めての方は、まず中深煎りをお試しいただき、焙煎に慣れてきたら中浅煎りに挑戦するのがオススメです。
+        </p>
+      <section>
+        <div class="actions">
+          <a class="button button-secondary" href="#pan-roasting">1. 片手鍋焙煎のやり方を確認</a>
+          <a class="button button-secondary" href="#how-to-use">2. RoastMonitorで焙煎を始める</a>
+          <a class="button button-secondary" href="#start">3. 焙煎を始める</a>
+        </div>
+      </section>
+
+      <section id="pan-roasting">
+        <p class="eyebrow">Pan roasting</p>
+        <h2>片手鍋焙煎のやり方</h2>
+        <p class="lead">
+          実際に焙煎を始める前に焙煎の大まかな流れを把握しましょう。
+        </p>
+
+        <h3>用意するもの</h3>
+        <div class="cards">
+          <article class="card">
+            <h3>生豆</h3>
+            <p>1回あたり100〜200g程度。鍋の底に薄く広がる量が扱いやすいです。</p>
+          </article>
+          <article class="card">
+            <h3>片手鍋とガスコンロ</h3>
+            <p>蓋つきの片手鍋がおすすめです。豆が飛び出しにくく、火力も安定します。</p>
+          </article>
+          <article class="card">
+            <h3>ザルとうちわ</h3>
+            <p>焙煎後すぐに豆を冷ますために使います。チャフを飛ばすのにも便利です。</p>
+          </article>
+          <article class="card">
+            <h3>軍手・ミトン</h3>
+            <p>鍋は高温になります。やけど防止のため必ず手を保護してください。</p>
+          </article>
+        </div>
+        <h3 style="margin-top: 32px">手順</h3>
+        <ol class="steps">
+          <li>
+            <h3>豆を量って鍋に入れる</h3>
+            <p>100〜200gの生豆を片手鍋に入れます。割れた豆や異物は取り除いておきます。</p>
+          </li>
+          <li>
+            <h3>中火で予熱しながら攪拌する</h3>
+            <p>蓋をして中火にかけ、鍋をコンロから少し浮かせた状態で蓋を軽く押さえ前後に振ります。均一な焙煎には、鍋を振り続け豆を絶えず動かす事が重要です。
+              30〜60秒に一度振るのを止め、蓋を開けて中の豆の色や香り、様子を確認します。この時豆が焦げないよう5秒以内を目安に鍋の振りを再開してください。</p>
+          </li>
+          <li>
+            <h3>1ハゼを聞く</h3>
+            <p>
+              豆が黄色から茶色へ変わり、パチパチと弾ける音（1ハゼ）が始まります。煙とともに香ばしい香りが立ちます。1ハゼが聞こえ始めたらすぐコンロを弱火にしてください。
+              1ハゼの音は徐々に大きくなり30～60秒ほどでピークに達します。その後さらに30～60秒ほどかけて音は徐々に小さくなっていきます。
+              中浅煎りの場合、1ハゼの音が小さくなったタイミング（目安として豆の温度は200℃前後）で火を止めます。中深煎りより深く焙煎する場合、2ハゼが聞こえてくるまで焙煎を続けてください。
+            </p>
+          </li>
+          <li>
+            <h3>2ハゼを聞く（中深煎りより深く焙煎する場合）</h3>
+            <p>
+              1ハゼが収まった後さらに加熱を続けると「ピチピチ」と細かく弾ける2ハゼが始まります。
+              中深煎りの場合、2ハゼが聞こえ始めたタイミング（目安として豆の温度は210℃前後）で火を止めます。
+            </p>
+          </li>
+          <li>
+            <h3>火を止めすぐに冷ます</h3>
+            <p>豆をザルにあけ、うちわで風を送って一気に冷まします。冷却が遅いと火が入りすぎるので素早く行います。</p>
+          </li>
+        </ol>
+        <p class="note">
+          焙煎では器具や豆が高温になり煙が出ます。換気扇を回し、窓を開けるなど換気を十分に行ってください。また火傷にご注意ください。
+          鍋やコンロから目を離さず、火の取り扱いには十分注意しましょう。
+        </p>
+      </section>
+
+      <section id="how-to-use">
+        <p class="eyebrow">How to use</p>
+        <h2>RoastMonitorで焙煎を始める</h2>
+        <p class="lead">
+          RoastMonitorの設定と実際の焙煎について説明します。
+        </p>
+        <h3>用意するもの</h3>
+        <div class="cards">
+          <article class="card">
+            <h3>RoastMonitor</h3>
+            <p>焙煎の温度ロガーです。温度センサを取り付けているネジ部のゆるみが無い事を確認してください。</p>
+          </article>
+          <article class="card">
+            <h3>USB充電器・USB type-Cケーブル</h3>
+            <p>RoastMonitorはUSB type-C から供給される電力で動作します。</p>
+          </article>
+          <article class="card">
+            <h3>WiFiネットワーク (2.4 GHz)</h3>
+            <p>RoastMonitor は、2.4 GHz の WiFiに接続します。2.4GHzに対応したWiFiネットワーク（スマートフォンテザリング不可）をご用意ください。
+              詳細な設定方法はご使用の無線ルータ、アクセスポイント等の説明書をご覧ください。
+            </p>
+          </article>
+        </div>
+        <h3 style="margin-top: 32px">緑色LEDの状態</h3>
+        <p>RoastMonitorの状態は緑色LEDの点灯・点滅パターンで確認できます。</p>
+        <div class="cards">
+          <article class="card">
+            <h3>点灯</h3>
+            <p>通常起動（WiFi接続済み）の状態です。</p>
+          </article>
+          <article class="card">
+            <h3>1秒周期で点滅</h3>
+            <p>起動中（WiFiへ接続を試みている状態）です。</p>
+          </article>
+          <article class="card">
+            <h3>高速点滅</h3>
+            <p>ネットワーク設定モードで起動している状態です。</p>
+          </article>
+        </div>
+        <h3 style="margin-top: 32px">ネットワークの設定をする</h3>
+        <ol class="steps">
+          <li>
+            <h3>ネットワーク設定モードでRoastMonitorを起動する（初回起動時もしくはネットワーク設定変更時のみ）</h3>
+            <ol class="substeps">
+              <li>Roast Monitor本体右下のUserボタンを押しながら、充電器に接続したUSB Type-CケーブルをRoast Monitorに接続して電源を投入します。</li>
+              <li>接続すると赤色LEDが点灯し、緑のLEDが1秒周期で点滅します。緑のLEDが高速で点滅を始めるまで数秒待ちます。</li>
+              <li>高速に点滅したらUserボタンを離してください。</li>
+            </ol>
+              </li>
+              <li>
+                <h3>ネットワーク設定モードで起動したRoastMonitorにスマートフォンから接続する</h3>
+                <ol class="substeps">
+                  <li>お持ちのスマートフォンのWiFi設定画面を開きます。</li>
+                  <li>「RoastMonitorSetup」というSSID名のネットワークを探して接続します。</li>
+                  <li>接続すると自動でRoastMonitorのネットワーク設定画面が開きます。開かない場合はWiFiセットアップ画面上のログインボタンを押してください。</li>
+                </ol>
+              </li>
+              <li>
+                <h3>ネットワーク設定画面で使用するWiFiネットワークを設定する</h3>
+                <ol class="substeps">
+                  <li>ネットワーク設定画面を開くと、自動で周囲のWiFiスキャンが始まります。スキャンが完了したら使用するWiFiのSSIDを選択し、パスワードを入力します。</li>
+                  <li>Saveボタンを押してください。Saveボタンを押すと、自動で接続テストが実施されます。</li>
+                  <li>正常に接続が確認できると、リセットボタンが表示されます。</li>
+                  <li>リセットボタンを押すと、Roast Monitorが通常モードで再起動します。再起動中は緑のLEDが1秒周期で点滅し、WiFiへの接続が成功すると点滅から点灯に変わります。点灯したら次のステップに進みます。</li>
+                </ol>
+                <p class="note">
+                  再起動後緑のLEDが高速に点滅している場合、WiFi接続に失敗しています。一度USB Type-Cケーブルを取り外し、再度ネットワーク設定モードでの起動からお試しください。
+                </p>
+              </li>
+              </ol>
+              <h3 style="margin-top: 32px">RoastMonitorを使って焙煎する</h3>
+        <ol class="steps">
+          <li>
+            <h3>通常モードでRoast Monitorを起動する</h3>
+            <p>
+              USB Type-CケーブルをRoast Monitorに接続し起動します。Userボタンの押下は不要です。</br>
+              設定済みのWiFiへ自動で接続し、接続が完了すると緑のLEDが点灯します。</p>
+          </li>
+          <li>
+            <h3>通常モードで起動したRoast Monitorにスマートフォンからアクセスする</h3>
+            <p>
+              お使いのスマートフォンから、このページ下部の <a href="#start"
+                style="text-decoration: underline">「RoastMonitorで焙煎を始める」セクション</a>
+              にある「今すぐRoastMonitorで焙煎を開始」ボタンからアクセスしてください。</p>
+          </li>
+          <li>
+            <h3>参照プロファイルを選ぶ</h3>
+            <p>Selectボタンを押し、参考にする焙煎プロファイルを選択します。</p>
+            <ul class="substeps">
+              <li>中浅煎り：Medium-Roastを選択してください。</li>
+              <li>中深煎り：City-Roastを選択してください。</li>
+              <li>表示しない：Noneを選択してください。</li>
+              <li>過去の焙煎プロファイル：Customを選択し、該当のalogファイルを選択してください。過去の焙煎プロファイルは、焙煎終了後にSaveボタンで保存できる焙煎記録のファイルです（詳細は後述の「焙煎記録を保存する」を参照）。
+              </li>
+            </ul>
+          </li>
+          <li>
+            <h3>焙煎を開始する</h3>
+            <p>温度センサの先端を、鍋の底面に触れないように豆の中へ差し込み、豆に触れている状態にします。
+              その後コンロの火をつけてからStartボタンを押し、温度の記録を開始します。</p>
+          </li>
+          <li>
+            <h3>温度を見ながら焙煎する</h3>
+            <p>画面には BT（豆温度）と ΔBT（1分あたりの温度変化）が表示されます。
+              焙煎プロファイルと現在の温度を参考にしながら焙煎を進めます。参考プロファイルに対して温度の上昇が不十分な場合、コンロの温度を上げるか片手鍋を振る位置を熱源の近くにしてください。
+              温度の上昇が過剰な場合、コンロの火力を下げるか片手鍋を振る位置を熱源から離してください。
+            </p>
+          </li>
+          <li>
+            <h3>焙煎を終了する</h3>
+            <p>焙煎終了のタイミングでStopボタンを押し、記録を停止してください。</p>
+          </li>
+          <li>
+            <h3>焙煎記録を保存する</h3>
+            <p>Saveボタンを押すと現在の焙煎結果がスマートフォンに保存されます。保存したファイルは、SelectボタンのCustomから読み込むことで次回以降の参考プロファイルとして使用できます。</p>
+          </li>
+        </ol>
+      </section>
+      <section id="start">
+        <p class="eyebrow">Let's start</p>
+        <h2>RoastMonitorで焙煎を始める</h2>
+        <div class="actions">
+          <a id="roast-start-btn" class="button is-disabled" href="http://roast-monitor.local" target="_blank"
+            aria-disabled="true">今すぐRoastMonitorで焙煎を開始</a>
+          <a class="button" href="./simulator/simulator.html">今すぐシミュレータで焙煎を体験</a>
+          <a class="button button-secondary" href="./index.html">RoastMonitorトップへ</a>
+          </div>
+        <p id="roast-start-hint" class="roast-start-hint">
+          RoastMonitorを使った焙煎を開始するには、RoastMonitorの電源を入れ現在ご使用の端末と同じWiFiネットワークに接続してください。
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="inner footer-inner">
+      <p class="logo">RoastMonitor</p>
+      <p>Time for a better cup.</p>
+    </div>
+  </footer>
+
+  <script src="./roast-start.js"></script>
+</body>
+
+</html>
